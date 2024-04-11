@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
                         ###################################################################################
-                        #######                RMIXMOD PROJECT ON KAGGLE DATASET                ###########
+                        #######                            RMIXMOD PROJECT                      ###########
                         ###################################################################################
 
 
@@ -76,7 +76,7 @@ for (i in 1:ncol(data)) {
 print(data)
 ```
 
-Vérif
+VÃ©rif
 
 ```{r}
 na_indices <- which(is.na(data), arr.ind = TRUE)
@@ -153,7 +153,7 @@ autoplot(Kmeans_model,desc,frame = TRUE)
 ```
 
 
-# GMM avec les donn�es de CC GENERAL
+# GMM avec les données de CC GENERAL
 
 
 ```{r}
@@ -196,9 +196,9 @@ summary(mod1)
 
 # 1. VISUALISATION :
 
-Parfois, une simple visualisation des donn�es peut suggérer un nombre optimal de clusters. Par exemple, si les donn�es montrent des structures claires qui semblent se regrouper naturellement en un certain nombre de groupes, cela peut guider le choix du nombre de clusters.
+Parfois, une simple visualisation des données peut suggÃ©rer un nombre optimal de clusters. Par exemple, si les données montrent des structures claires qui semblent se regrouper naturellement en un certain nombre de groupes, cela peut guider le choix du nombre de clusters.
 
-Exemple avec le jeu de données *geyser* :
+Exemple avec le jeu de donnÃ©es *geyser* :
 
 
 
@@ -212,7 +212,7 @@ data(geyser)
 plot(geyser)
 ```
 
-M�me si c'est subjectif, le plot sugg�re 3 clusters.
+Même si c'est subjectif, le plot suggère 3 clusters.
 
 
 
@@ -268,7 +268,7 @@ head(df)
 ```
 
 
-#Garder � l'esprit que plusieurs algos reposent sur des departs au hasard ( e.g K-means). Donc on fait un set.seed() pour avoir un exemple réutilisable.
+#Garder à l'esprit que plusieurs algos reposent sur des departs au hasard ( e.g K-means). Donc on fait un set.seed() pour avoir un exemple rÃ©utilisable.
 
 
 
@@ -288,11 +288,11 @@ plot(1:15, wss, type="b", xlab="Number of Clusters",
      ylab="Within groups sum of squares")
 ```
 
-R�gle du coude : Le nombre optimal de clusters est 3. L'ajout de nouveaux clusters ne change pas significativement le gain.
+Règle du coude : Le nombre optimal de clusters est 3. L'ajout de nouveaux clusters ne change pas significativement le gain.
 
 
-#### **Remarque** : On n'a pas toujours des données clairement clusterisées. Ce qui signifie que le coulde n'est pas toujours clair.
-D'o� l'utilit� parfois de combiner cette r�gle avec les autres m�thodes ci-dessous.
+#### **Remarque** : On n'a pas toujours des donnÃ©es clairement clusterisÃ©es. Ce qui signifie que le coulde n'est pas toujours clair.
+D'où l'utilité parfois de combiner cette règle avec les autres méthodes ci-dessous.
 
 
 
@@ -307,12 +307,12 @@ knitr::include_graphics('silhouette_2.png')
 ```
 
 
-Les graphiques de silhouette affichent une mesure de la proximité de chaque point dans un cluster par rapport aux points des clusters voisins.
+Les graphiques de silhouette affichent une mesure de la proximitÃ© de chaque point dans un cluster par rapport aux points des clusters voisins.
 
 
 
 
-Cette mesure varie de -1 � 1, où 1 signifie que les points sont très proches de leur propre cluster et loin des autres clusters, tandis que -1 indique que les points sont proches des clusters voisins (over-lapping)
+Cette mesure varie de -1 à 1, oÃ¹ 1 signifie que les points sont trÃ¨s proches de leur propre cluster et loin des autres clusters, tandis que -1 indique que les points sont proches des clusters voisins (over-lapping)
 
 
 
@@ -322,7 +322,7 @@ La formule pour calculer le score silhouette est :
 $S(i) = \frac{b(i) - a(i)}{max [a(i),b(i)]}$
 
 avec * S(i) : Le score silhouette de l'observation i
-     * a(i) : La distance moyenne entre l'observation i et les autres observations du même cluster
+     * a(i) : La distance moyenne entre l'observation i et les autres observations du mÃªme cluster
      * b(i) : La distance moyenne entre l'observation i et les autres clusters il n'appartient pas
      
 
@@ -333,10 +333,10 @@ On calcule ensuite la silhouette moyenne pour chaque k $SilhouetteMoyenne = mean
 
 On trace enfin la Silhouette_Moyenne en fonction du nombre de clusters K. 
 
-Pour ça, on sélectionne une suite de nombres K (disons entre 1 et 10), et on trace le score silhouette pour chaque K
+Pour Ã§a, on sÃ©lectionne une suite de nombres K (disons entre 1 et 10), et on trace le score silhouette pour chaque K
 
 
-Lorsque nous appliquons l'analyse de silhouette sur notre jeu de données sur le vin, nous obtenons les graphiques suivants avec une indication sur le nombre optimal de clusters :
+Lorsque nous appliquons l'analyse de silhouette sur notre jeu de donnÃ©es sur le vin, nous obtenons les graphiques suivants avec une indication sur le nombre optimal de clusters :
 
 ```{r}
 #install.packages('NbClust')
@@ -360,19 +360,19 @@ fviz_nbclust(scaled_wine2, pam, method = "silhouette")+ theme_classic()
 
 
 
-Le graphique montre le coefficient de silhouette sur des valeurs de k allant de 1 � 10.  Le coefficient de silhouette moyen est le plus �lev� lorsque k=3.
+Le graphique montre le coefficient de silhouette sur des valeurs de k allant de 1 à 10.  Le coefficient de silhouette moyen est le plus élevé lorsque k=3.
 
 
 # 4.STATISTIQUE DU GAP : 
 
 
-La statistique du GAP compare la variation intra-cluster pour différentes valeurs de k avec la variation intra-cluster attendue sous une distribution nulle.
+La statistique du GAP compare la variation intra-cluster pour diffÃ©rentes valeurs de k avec la variation intra-cluster attendue sous une distribution nulle.
 
 ```{r}
 fviz_nbclust(scaled_wine2, pam, method = "gap_stat")
 ```
 
-Idéalement, nous devrions choisir la valeur de k qui maximise la statistique du GAP. Cependant, dans des ensembles de données du monde réel où les clusters ne sont pas aussi bien définis, il peut être plus parcimonieux de choisir la valeur de k où le taux d'augmentation de la statistique commence à ralentir.
+IdÃ©alement, nous devrions choisir la valeur de k qui maximise la statistique du GAP. Cependant, dans des ensembles de donnÃ©es du monde rÃ©el oÃ¹ les clusters ne sont pas aussi bien dÃ©finis, il peut Ãªtre plus parcimonieux de choisir la valeur de k oÃ¹ le taux d'augmentation de la statistique commence Ã  ralentir.
 
 
 
@@ -432,7 +432,7 @@ RM = mixmodCluster(scaled_wine2,3)
 ```{r}
 #plot(ICL)
 ```
-Toujours 3 clusters avec la méthode BIC et ICL
+Toujours 3 clusters avec la mÃ©thode BIC et ICL
 
 ## LE CAS DE LA LIBRAIRIE NBCLUST :
 
@@ -445,7 +445,7 @@ clusternum <- NbClust (scaled_wine2, distance="euclidean", method="kmeans")
 NbClust indique que le meilleur nombre de clusters est 3. 
 
 
-J'ai utilisé l'algorithme PAM (Partitioning Around Medoids), qui est une forme plus robuste de l'algorithme K-means, et spécifié 3 clusters.
+J'ai utilisÃ© l'algorithme PAM (Partitioning Around Medoids), qui est une forme plus robuste de l'algorithme K-means, et spÃ©cifiÃ© 3 clusters.
 
 
 ```{r}
@@ -530,11 +530,11 @@ library(plot3D)
 
 
 
-# clusters en 3D  (trois premières composantes principales)
+# clusters en 3D  (trois premiÃ¨res composantes principales)
 scatter3D(pca_scores[, 1], pca_scores[, 2], pca_scores[, 3], 
           colvar = cluster_memberships_2, pch = 19, 
           xlab = "PC1", ylab = "PC2", zlab = "PC3", 
-          main = "Clusters Identifiés by Rmixmod",
+          main = "Clusters IdentifiÃ©s by Rmixmod",
           colkey = FALSE)  
 
 # legende
@@ -543,7 +543,7 @@ legend("topright", legend = unique(cluster_memberships_2), pch = 19,
 
 ```
 
-Pas très visible, on peut créér une animation :
+Pas trÃ¨s visible, on peut crÃ©Ã©r une animation :
 
 
 
@@ -554,14 +554,14 @@ library(rgl)
 
 
 
-# ouvrir une fenêtre 3D
+# ouvrir une fenÃªtre 3D
 open3d()
 
-# Crée un cube vide
+# CrÃ©e un cube vide
 plot3d(0, 0, 0, xlim = range(pca_scores[, 1]), ylim = range(pca_scores[, 2]), zlim = range(pca_scores[, 3]), 
        type = "n", xlab = "PC1", ylab = "PC2", zlab = "PC3")
 
-# Ajouter des objets à chaque cluster
+# Ajouter des objets Ã  chaque cluster
 
 for (i in unique(cluster_memberships_2)) {
   points3d(pca_scores[cluster_memberships_2 == i, 1], pca_scores[cluster_memberships_2 == i, 2], pca_scores[cluster_memberships_2 == i, 3], 
