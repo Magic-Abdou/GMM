@@ -554,14 +554,14 @@ library(rgl)
 
 
 
-# ouvrir une fenÃªtre 3D
+# ouvrir une fenêtre 3D
 open3d()
 
-# CrÃ©e un cube vide
+# Créer un cube vide
 plot3d(0, 0, 0, xlim = range(pca_scores[, 1]), ylim = range(pca_scores[, 2]), zlim = range(pca_scores[, 3]), 
        type = "n", xlab = "PC1", ylab = "PC2", zlab = "PC3")
 
-# Ajouter des objets Ã  chaque cluster
+# Ajouter des objets à chaque cluster
 
 for (i in unique(cluster_memberships_2)) {
   points3d(pca_scores[cluster_memberships_2 == i, 1], pca_scores[cluster_memberships_2 == i, 2], pca_scores[cluster_memberships_2 == i, 3], 
@@ -575,11 +575,7 @@ play3d(spin3d(axis = c(0, 0, 1)), duration = 100)
 
 
 
-```{r}
-#install.packages('devtools')
-library(devtools)
-#source('https://github.com/mixmod/mixmod/blob/master/Rmixmod/R/MixmodCluster.R')
-```
+
 
 
 
