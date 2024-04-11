@@ -1,0 +1,255 @@
+---
+title: "LOURME TD SCORING"
+author: "Abdou NIANG"
+date: "2024-02-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(rio)
+
+df = import('client.csv')
+head(df)
+```
+
+
+```{r}
+
+client <- read.table('client.csv',sep=',',dec='.',header=TRUE)
+
+
+names(client)
+
+## [1] "cash" "flow" "saving" "consume" "risk"
+
+
+```
+
+
+
+```{r}
+head(client)
+```
+
+
+# *la liquiditÃ© (cash), le flux (flow), lâ€™Ã©pargne (saving), le niveau de consommation (consume) et la classe de risque (risk)*
+
+```{r}
+client[,1:4]
+```
+
+
+```{r}
+unique(client$risk)
+```
+
+
+```{r}
+#mixmodPredict
+```
+
+
+
+
+```{r}
+class(client[,5])
+```
+
+
+
+```{r}
+desc=as.data.frame(client[,1:4])
+
+risk=as.factor(client[,5]+1)  # ajoute chaque à chaque nombre +1 et en fait des niveaux de risque  1 et 2
+
+par(mfrow = c(1, 2))
+
+plot(desc$consume,desc$saving, col=risk)
+
+plot(desc,col=risk)
+
+
+
+```
+
+
+
+
+```{r}
+class(client)
+```
+
+
+
+
+```{r}
+levels(risk)
+
+# '1'   '2'     c'est parfait
+```
+
+
+# *A quelle classe de risque lâ€™analyse discriminante probabiliste basÃ©e sur un modÃ¨le Gaussien affecte-t-elle un nouveau*
+  *client avec les caractÃ©ristiques suivantes : liquiditÃ© = 6, 2 ; flux = 2, 9 ; Ã©pargne = 4, 9 ; consommation = 1, 7 ?*
+
+
+
+- Pour cela, nous utilisons ici le package Rmixmod ( Pour plus de dÃ©tails sur le package voir ici [Journal of statistics](https://www.jstatsoft.org/article/view/v067i06))
+
+
+## Apprentissage du classifieur :
+
+
+
+
+```{r}
+
+library(Rmixmod)
+gausslearn <- mixmodLearn(desc, knownLabels=risk)   # pas de train test. Le classifieur va apprendre sur tout le tableau
+
+```
+
+
+## Affectation du nouveau client : 
+
+```{r}
+new=data.frame(cash=6.2, flow=2.9, saving=4.9, consume=1.7) # données du nouveau client
+
+
+
+
+prediction <- mixmodPredict ( data = new , classificationRule = gausslearn["bestResult"])
+
+prediction
+```
+
+
+- Remarque : On peut constater à ce stade, la pauvreté de la documentation Rmixmod. Ici la fonction *mixmodPredict* n'affiche rien.
+
+  - En regardant la documentation existante sur Internet, on comprend que cette fonction calcule la deuxième étape d'une analyse discriminante. Le but de cette étape est d'assigner les observations restantes ou nouvelles à l'un des groupes.
+
+
+
+
+
+```{r}
+prediction[6] # probabilités associées aux classes  ou proportions
+```
+```{r}
+
+print(prediction[5]) # classe de risque estimée
+```
+
+
+
+
+```{r}
+print(prediction[2])
+
+prediction[5]
+```
+
+                                                *-------------------------------------------------------------*
+
+
+
+
+
+
+```{r}
+#install.packages('gclus')
+
+library(gclus)
+data(bank)
+
+head(bank)
+
+dim(bank)
+
+unique(bank$Status)
+
+desc_2=as.data.frame(bank[,2:7])
+class=as.factor(bank[,1]+1)
+
+
+
+plot(desc_2,col=class) # enlever # pour reprÃ©senter les donnÃ©es
+
+```
+
+
+```{r}
+gaussianMM= mixmodCluster(desc_2,2)
+
+gaussianMM
+
+```
+
+
+```{r}
+summary(gaussianMM)
+```
+```{r}
+hist(gaussianMM)
+```
+
+
+
+
+```{r}
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra) # clustering algorithms & visualization
+```
+
+
+
+```{r}
+
+
+plotCluster(gaussianMM["bestResult"],desc_2)
+
+
+
+```
+
+
+```{r}
+library(mclust)
+```
+
+
+```{r}
+
+gaussian_MC = Mclust(desc)
+```
+
+```{r}
+#plot(gaussian_MC)  essayer le code Lavigne en TD plotBIC() pour voir le temps d'execution
+```
+
+
+
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                
