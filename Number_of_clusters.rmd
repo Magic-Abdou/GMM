@@ -196,7 +196,7 @@ summary(mod1)
 
 # 1. VISUALISATION :
 
-Parfois, une simple visualisation des données peut suggÃ©rer un nombre optimal de clusters. Par exemple, si les données montrent des structures claires qui semblent se regrouper naturellement en un certain nombre de groupes, cela peut guider le choix du nombre de clusters.
+Parfois, une simple visualisation des données peut suggérer un nombre optimal de clusters. Par exemple, si les données montrent des structures claires qui semblent se regrouper naturellement en un certain nombre de groupes, cela peut guider le choix du nombre de clusters.
 
 Exemple avec le jeu de donnÃ©es *geyser* :
 
@@ -268,7 +268,7 @@ head(df)
 ```
 
 
-#Garder à l'esprit que plusieurs algos reposent sur des departs au hasard ( e.g K-means). Donc on fait un set.seed() pour avoir un exemple rÃ©utilisable.
+# Garder à l'esprit que plusieurs algos reposent sur des departs au hasard ( e.g K-means). Donc on fait un set.seed() pour avoir un exemple rÃ©utilisable.
 
 
 
