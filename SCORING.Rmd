@@ -1,5 +1,5 @@
 ---
-title: "LOURME TD SCORING"
+title: "SCORING"
 author: "Abdou NIANG"
 date: "2024-02-28"
 output: html_document
@@ -36,7 +36,7 @@ head(client)
 ```
 
 
-# *la liquidité (cash), le flux (flow), l’épargne (saving), le niveau de consommation (consume) et la classe de risque (risk)*
+# *la liquiditÃ© (cash), le flux (flow), lâ€™Ã©pargne (saving), le niveau de consommation (consume) et la classe de risque (risk)*
 
 ```{r}
 client[,1:4]
@@ -64,7 +64,7 @@ class(client[,5])
 ```{r}
 desc=as.data.frame(client[,1:4])
 
-risk=as.factor(client[,5]+1)  # ajoute chaque � chaque nombre +1 et en fait des niveaux de risque  1 et 2
+risk=as.factor(client[,5]+1)  # ajoute chaque à chaque nombre +1 et en fait des niveaux de risque  1 et 2
 
 par(mfrow = c(1, 2))
 
@@ -93,8 +93,8 @@ levels(risk)
 ```
 
 
-# *A quelle classe de risque l’analyse discriminante probabiliste basée sur un modèle Gaussien affecte-t-elle un nouveau*
-  *client avec les caractéristiques suivantes : liquidité = 6, 2 ; flux = 2, 9 ; épargne = 4, 9 ; consommation = 1, 7 ?*
+# *A quelle classe de risque lâ€™analyse discriminante probabiliste basÃ©e sur un modÃ¨le Gaussien affecte-t-elle un nouveau*
+  *client avec les caractÃ©ristiques suivantes : liquiditÃ© = 6, 2 ; flux = 2, 9 ; Ã©pargne = 4, 9 ; consommation = 1, 7 ?*
 
 
 
@@ -117,7 +117,7 @@ gausslearn <- mixmodLearn(desc, knownLabels=risk)   # pas de train test. Le clas
 ## Affectation du nouveau client : 
 
 ```{r}
-new=data.frame(cash=6.2, flow=2.9, saving=4.9, consume=1.7) # donn�es du nouveau client
+new=data.frame(cash=6.2, flow=2.9, saving=4.9, consume=1.7) # données du nouveau client
 
 
 
@@ -128,20 +128,20 @@ prediction
 ```
 
 
-- Remarque : On peut constater � ce stade, la pauvret� de la documentation Rmixmod. Ici la fonction *mixmodPredict* n'affiche rien.
+- Remarque : On peut constater à ce stade, la pauvreté de la documentation Rmixmod. Ici la fonction *mixmodPredict* n'affiche rien.
 
-  - En regardant la documentation existante sur Internet, on comprend que cette fonction calcule la deuxi�me �tape d'une analyse discriminante. Le but de cette �tape est d'assigner les observations restantes ou nouvelles � l'un des groupes.
+  - En regardant la documentation existante sur Internet, on comprend que cette fonction calcule la deuxième étape d'une analyse discriminante. Le but de cette étape est d'assigner les observations restantes ou nouvelles à l'un des groupes.
 
 
 
 
 
 ```{r}
-prediction[6] # probabilit�s associ�es aux classes  ou proportions
+prediction[6] # probabilités associées aux classes  ou proportions
 ```
 ```{r}
 
-print(prediction[5]) # classe de risque estim�e
+print(prediction[5]) # classe de risque estimée
 ```
 
 
@@ -177,7 +177,7 @@ class=as.factor(bank[,1]+1)
 
 
 
-plot(desc_2,col=class) # enlever # pour représenter les données
+plot(desc_2,col=class) # enlever # pour reprÃ©senter les donnÃ©es
 
 ```
 
