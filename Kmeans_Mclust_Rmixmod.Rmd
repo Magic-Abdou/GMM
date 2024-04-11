@@ -1,0 +1,219 @@
+---
+title: "mclust"
+author: "Abdou NIANG"
+date: "2024-02-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(factoextra)
+library(MASS)
+library(ggplot2)
+library(rio)
+setwd = ('~/Dataset')
+mydata = import('https://raw.githubusercontent.com/mariocastro73/ML2020-2021/master/datasets/comparing-dends.csv')
+head(mydata)
+```
+
+1er travail de clustering avec Mclust : On a supposé ici que les données provenaient d'un mélange de gaussiennes.
+
+Ceci est p�rement dans le but de comparer Rmixmod et Mclust ( voir temps de calcul, proportions etc...)
+
+
+### Amusons nous d'abord à trouver le nombre optimal de clusters avec la méthode Kmeans
+
+ Ci-dessous, une petite fonction sympa de R, pour rechercher le nombre optimal de cluster (règle du coud)
+ 
+```{r}
+wssplot <- function(data, nc=15, seed=1234){
+                  wss <- (nrow(data)-1)*sum(apply(data,2,var))
+                      for (i in 2:nc){
+                set.seed(seed)
+                    wss[i] <- sum(kmeans(data, centers=i)$withinss)}
+              plot(1:nc, wss, type="b", xlab="Number of Clusters",
+                            ylab="Within groups sum of squares")
+              wss
+       }
+
+
+```
+
+```{r}
+wssplot(mydata)
+```
+
+A priori deux clusters suffisent, poursuivons :
+
+
+```{r}
+KM = kmeans(mydata,3)
+```
+
+
+
+
+
+```{r}
+library(ggfortify)
+autoplot(KM,mydata,frame = TRUE)
+```
+
+Les deux clusters sont très bien séparés et Kmeans marche très bien.
+
+# Poursuivons cette fois avec les modèles de mélange gaussiens en comparant Mclust et Rmixmod
+
+```{r}
+#install.packages('mclust')
+library(mclust)
+
+```
+
+```{r}
+ggplot(mydata,aes(x=x,y=y)) +geom_point() + geom_density2d()
+```
+
+
+Attention ici il ne s'agit pas de gaussiennes ! C'est des densités empiriques. Rien à voir avec des densités de gaussiennes.
+
+
+
+
+
+
+
+
+```{r}
+library(mclust)
+dens <- densityMclust(mydata)
+plot(dens,what = 'density',type='persp')
+```
+
+Ici on  a bien �  faire des densités de gaussiennes.
+
+2ème chose : On peut bien remarquer qu'il y'a trois gaussiennes chacune avec des paramètres différents.
+
+Contrairement � la règle du coude qui souvent est imprécise, Mclust indique trois gaussiennes bien séparées indiquant 3 gaussiennes.
+
+
+
+```{r}
+
+mc=Mclust(mydata)
+
+```
+
+
+
+
+
+```{r}
+#plot(mc)
+```
+
+
+```{r}
+library(Rmixmod)
+
+
+RM = mixmodCluster(mydata,3)
+
+RM
+
+```
+
+
+
+```{r}
+summary(RM)
+```
+
+
+```{r}
+hist(RM)
+```
+
+
+```{r}
+plot(RM)
+```
+
+
+
+```{r}
+iris
+head(iris)
+```
+
+
+
+```{r}
+remaining.obs <- sample(1:nrow(iris), 10)
+# then run a mixmodLearn() analysis without those 10 observations
+learn <- mixmodLearn(iris[-remaining.obs, 1:4], iris$Species[-remaining.obs])
+# create a MixmodPredict to predict those 10 observations
+prediction <- mixmodPredict(
+  data = iris[remaining.obs, 1:4],
+  classificationRule = learn["bestResult"]
+)
+# show results
+prediction
+# compare prediction with real results
+paste("accuracy = ", mean(as.integer(iris$Species[remaining.obs]) == prediction["partition"]) * 100,
+      "%",
+      sep = ""
+)
+```
+
+```{r}
+mixmodGaussianModel()
+```
+#-----------------------------------#
+
+
+
+test sur un jeu de donn�esléatoires :
+
+
+
+```{r}
+library(dplyr)
+
+# Définition du nombre de lignes et de colonnes
+n_rows <- 5000
+n_cols <- 10
+
+# Génération de données aléatoires
+data <- matrix(runif(n_rows * n_cols), nrow = n_rows, ncol = n_cols)
+
+# Création d'un DataFrame avec des données aléatoires
+df <- as.data.frame(data)
+colnames(df) <- paste0("Feature_", 1:n_cols)
+
+# Affichage des premières lignes du DataFrame
+head(df)
+
+```
+
+```{r}
+
+```
+
+```{r}
+RM_alea = mixmodCluster(df,3)
+RM_alea
+```
+
+```{r}
+
+plotCluster(RM_alea["bestResult"],df)
+```
+
+
+
+
+
+

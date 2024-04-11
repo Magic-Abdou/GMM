@@ -1,0 +1,125 @@
+---
+title: "market data"
+author: "Abdou NIANG"
+date: "2024-03-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+                                        ###################################################################################
+                                        #######                COMPARAISON ENTRE ML AZURE ET R                  ###########
+                                        ###################################################################################
+                        
+                        
+```{r}
+
+market_data = read.csv("Market Data.csv")
+
+head(market_data)
+```
+
+```{r}
+class(market_data)
+
+Rmixmod::is.dataType(market_data)
+```
+
+
+```{r}
+market_data = scale(market_data[,-1])
+head(market_data)
+```
+
+
+Notre fameuse fonction pour chercher le nombre de cluster (règle du coud):
+
+```{r}
+wssplot <- function(data, nc=15, seed=1234){
+                  wss <- (nrow(data)-1)*sum(apply(data,2,var))
+                      for (i in 2:nc){
+                set.seed(seed)
+                    wss[i] <- sum(kmeans(data, centers=i)$withinss)}
+              plot(1:nc, wss, type="b", xlab="Number of Clusters",
+                            ylab="Within groups sum of squares")
+              wss
+       }
+
+```
+
+
+```{r}
+wssplot(market_data)
+```
+
+
+Imprécise ! Comme toujours on ne peut dire exactement où se trouve le coud. Disons qu'à partir de 4 il n'y a plus de changements significatifs.
+
+Fixons le nombre de centroids à 4.
+
+```{r}
+library(factoextra)
+library(MASS)
+library(ggplot2)
+library(mclust)
+`````````
+
+
+```{r}
+market_KM = kmeans(market_data,6)
+market_KM
+  
+```
+
+
+```{r}
+library(ggfortify)
+autoplot(market_KM,market_data,frame = TRUE)
+```
+Ici aussi Kmeans assigne directement chaque point à un cluster sans laisser place aux doutes : Et c'est là qu'intervient le GMM avec ses probabiltés d'appartenance.
+
+
+
+```{r}
+ggplot(market_data,aes(x=PopDensity,y=Pop2014)) +geom_point() + geom_density2d()
+```
+
+
+```{r}
+dens <- densityMclust(market_data)
+plot(dens,what = 'density',type='persp')
+```
+
+```{r}
+library(Rmixmod)
+
+market_data = as.data.frame(market_data)
+RM = mixmodCluster(market_data,6)
+
+RM
+```
+
+
+```{r}
+hist(RM)
+```
+
+```{r}
+plotCluster(RM["bestResult"],market_data)
+```
+
+Evidemment ceci est uniquement dans un but de test :  Pour rappel Rmixmod et mclust (package pour GMM) marchent mieux avec des gros tableaux de données avec des features normalement distribuées.
+
+```{r}
+
+market_MC = Mclust(market_data)
+```
+```{r}
+#plot(market_MC)
+```
+

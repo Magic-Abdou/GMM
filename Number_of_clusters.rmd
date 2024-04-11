@@ -1,0 +1,593 @@
+---
+title: "CC GENERAL"
+author: "Abdou NIANG"
+date: "2024-01-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+                        ###################################################################################
+                        #######                RMIXMOD PROJECT ON KAGGLE DATASET                ###########
+                        ###################################################################################
+
+
+
+```{r}
+#desinstall.packages('pacman')
+```
+
+
+```{r}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse,cluster,factoextra,Rmixmod)
+```
+
+```{r}
+data = read.csv('~/STAGE/kaggle dataset for GMM/CC GENERAL.csv')
+
+head(data)
+```
+
+```{r}
+names(data)
+```
+
+```{r}
+unique(data$CASH_ADVANCE_TRX)
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+# verif des NAs
+
+na_indices <- which(is.na(data), arr.ind = TRUE)
+
+if (length(na_indices) > 0) {
+  cat("Missing values found at the following indices:\n")
+  print(na_indices)
+} else {
+  cat("No missing values found.\n")
+}
+```
+
+```{r}
+# Remplace les NAs avec la moyenne 
+
+for (i in 1:ncol(data)) {
+  if (anyNA(data[, i])) {
+    data[is.na(data[, i]), i] <- mean(data[, i], na.rm = TRUE)
+  }
+}
+
+print(data)
+```
+
+Vérif
+
+```{r}
+na_indices <- which(is.na(data), arr.ind = TRUE)
+
+if (length(na_indices) > 0) {
+  cat("Missing values found at the following indices:\n")
+  print(na_indices)
+} else {
+  cat("No missing values found.\n")
+}
+```
+
+
+
+
+```{r}
+desc=as.data.frame(data[,2:ncol(data)])
+
+```
+
+```{r}
+str(desc)
+```
+How to the optimal number of clusters
+
+
+
+```{r}
+wssplot <- function(data, nc=15, seed=1234){
+                  wss <- (nrow(data)-1)*sum(apply(data,2,var))
+                      for (i in 2:nc){
+                set.seed(seed)
+                    wss[i] <- sum(kmeans(data, centers=i)$withinss)}
+              plot(1:nc, wss, type="b", xlab="Number of Clusters",
+                            ylab="Within groups sum of squares")
+              wss
+       }
+
+
+```
+
+
+
+```{r}
+wssplot(desc)
+```
+
+
+
+
+
+```{r}
+Kmeans_model= kmeans(desc,4)
+
+```
+
+```{r}
+Kmeans_model$cluster
+
+```
+
+```{r}
+Kmeans_model$centers
+```
+
+
+
+
+
+```{r}
+#install.packages('ggfortify')
+library(ggfortify)
+autoplot(Kmeans_model,desc,frame = TRUE)
+```
+
+
+# GMM avec les donn�es de CC GENERAL
+
+
+```{r}
+library(mclust)
+library(Rmixmod)
+
+```
+
+
+
+```{r}
+MC= Mclust(desc)
+```
+
+
+
+```{r}
+BIC= mclustBIC(desc)
+```
+
+```{r}
+ICL = mclustICL(desc)
+```
+
+```{r}
+mod1 <- Mclust(desc, x = BIC)
+summary(mod1)
+```
+
+
+        
+        
+         \-----------------------------------Choix du nombre optimal de clusters---------------------------\
+
+
+
+
+
+
+
+# 1. VISUALISATION :
+
+Parfois, une simple visualisation des donn�es peut suggérer un nombre optimal de clusters. Par exemple, si les donn�es montrent des structures claires qui semblent se regrouper naturellement en un certain nombre de groupes, cela peut guider le choix du nombre de clusters.
+
+Exemple avec le jeu de données *geyser* :
+
+
+
+
+```{r}
+library(MASS)
+data(geyser)
+
+
+
+plot(geyser)
+```
+
+M�me si c'est subjectif, le plot sugg�re 3 clusters.
+
+
+
+
+
+
+
+# 2. REGLE DU COUD :
+
+
+```{r}
+knitr::include_graphics('coud.png')
+```
+
+
+
+```{r}
+library(dplyr)
+library(knitr)
+library(gclus)
+
+# loading data
+data(wine)
+head(wine)
+```
+
+```{r}
+
+unique(wine$Class)
+
+```
+
+```{r}
+
+table(wine$Class)
+
+```
+```{r}
+scaled_wine <- scale(wine) %>% as.data.frame()
+
+```
+
+```{r}
+scaled_wine2 = scaled_wine[-1]
+#head(df2)
+```
+
+
+
+```{r}
+df = scaled_wine[,2:ncol(scaled_wine)]
+head(df)
+```
+
+
+#Garder � l'esprit que plusieurs algos reposent sur des departs au hasard ( e.g K-means). Donc on fait un set.seed() pour avoir un exemple réutilisable.
+
+
+
+
+```{r}
+set.seed(13)
+```
+
+
+
+### total within-cluster sum of square (WSS)
+```{r}
+wss <- (nrow(scaled_wine2)-1)*sum(apply(scaled_wine2,2,var))
+for (i in 2:15) wss[i] <- sum(kmeans(scaled_wine2,
+                                     centers=i)$withinss)
+plot(1:15, wss, type="b", xlab="Number of Clusters",
+     ylab="Within groups sum of squares")
+```
+
+R�gle du coude : Le nombre optimal de clusters est 3. L'ajout de nouveaux clusters ne change pas significativement le gain.
+
+
+#### **Remarque** : On n'a pas toujours des données clairement clusterisées. Ce qui signifie que le coulde n'est pas toujours clair.
+D'o� l'utilit� parfois de combiner cette r�gle avec les autres m�thodes ci-dessous.
+
+
+
+# 3. SILHOUETTE :
+
+```{r}
+knitr::include_graphics('silhouette_1.png')
+```
+
+```{r}
+knitr::include_graphics('silhouette_2.png')
+```
+
+
+Les graphiques de silhouette affichent une mesure de la proximité de chaque point dans un cluster par rapport aux points des clusters voisins.
+
+
+
+
+Cette mesure varie de -1 � 1, où 1 signifie que les points sont très proches de leur propre cluster et loin des autres clusters, tandis que -1 indique que les points sont proches des clusters voisins (over-lapping)
+
+
+
+La formule pour calculer le score silhouette est :
+
+
+$S(i) = \frac{b(i) - a(i)}{max [a(i),b(i)]}$
+
+avec * S(i) : Le score silhouette de l'observation i
+     * a(i) : La distance moyenne entre l'observation i et les autres observations du même cluster
+     * b(i) : La distance moyenne entre l'observation i et les autres clusters il n'appartient pas
+     
+
+
+
+On calcule ensuite la silhouette moyenne pour chaque k $SilhouetteMoyenne = mean(S(i))$
+
+
+On trace enfin la Silhouette_Moyenne en fonction du nombre de clusters K. 
+
+Pour ça, on sélectionne une suite de nombres K (disons entre 1 et 10), et on trace le score silhouette pour chaque K
+
+
+Lorsque nous appliquons l'analyse de silhouette sur notre jeu de données sur le vin, nous obtenons les graphiques suivants avec une indication sur le nombre optimal de clusters :
+
+```{r}
+#install.packages('NbClust')
+```
+
+
+```{r}
+library (NbClust)
+library (cluster)
+#library (clustertend)
+library (factoextra)
+library (fpc)
+```
+
+
+
+
+```{r}
+fviz_nbclust(scaled_wine2, pam, method = "silhouette")+ theme_classic()
+```
+
+
+
+Le graphique montre le coefficient de silhouette sur des valeurs de k allant de 1 � 10.  Le coefficient de silhouette moyen est le plus �lev� lorsque k=3.
+
+
+# 4.STATISTIQUE DU GAP : 
+
+
+La statistique du GAP compare la variation intra-cluster pour différentes valeurs de k avec la variation intra-cluster attendue sous une distribution nulle.
+
+```{r}
+fviz_nbclust(scaled_wine2, pam, method = "gap_stat")
+```
+
+Idéalement, nous devrions choisir la valeur de k qui maximise la statistique du GAP. Cependant, dans des ensembles de données du monde réel où les clusters ne sont pas aussi bien définis, il peut être plus parcimonieux de choisir la valeur de k où le taux d'augmentation de la statistique commence à ralentir.
+
+
+
+# 5. CRITERE DE CALINSKY 
+
+
+```{r}
+library(vegan)
+
+set.seed(13)
+
+cal_fit2 <- cascadeKM(scaled_wine2, 1, 10, iter = 1000)
+plot(cal_fit2, sortg = TRUE, grpmts.plot = TRUE)
+```
+
+
+
+```{r}
+calinski.best2 <- as.numeric(which.max(cal_fit2$results[2,]))
+cat("Nombre optimal de clusters K = ", calinski.best2, "\n")
+```
+
+
+
+```{r}
+library(mclust)
+
+set.seed(13)
+
+```
+
+
+
+```{r}
+RM = mixmodCluster(scaled_wine2,3)
+
+```
+
+
+
+```{r}
+#BIC = mclustBIC(scaled_wine2)
+```
+
+
+
+```{r}
+#plot(BIC)
+```
+
+
+
+```{r}
+#ICL = mclustICL(scaled_wine2)
+```
+
+```{r}
+#plot(ICL)
+```
+Toujours 3 clusters avec la méthode BIC et ICL
+
+## LE CAS DE LA LIBRAIRIE NBCLUST :
+
+
+```{r}
+clusternum <- NbClust (scaled_wine2, distance="euclidean", method="kmeans")
+```
+
+
+NbClust indique que le meilleur nombre de clusters est 3. 
+
+
+J'ai utilisé l'algorithme PAM (Partitioning Around Medoids), qui est une forme plus robuste de l'algorithme K-means, et spécifié 3 clusters.
+
+
+```{r}
+pam.res3 <- pam(scaled_wine2, 3,  metric = "euclidean", stand = FALSE)
+```
+
+
+
+
+```{r}
+fviz_cluster(pam.res3, data = scaled_wine2, palette = c("#FC4E07", "#00AFBB", "#E7B800"), ellipse.type = "euclid", 
+star.plot = TRUE, 
+repel = TRUE, 
+ggtheme = theme_minimal() )
+```
+
+```{r}
+fviz_silhouette(pam.res3, palette = "jco", ggtheme = theme_classic())
+```
+
+```{r}
+MC = Mclust(scaled_wine2,1:4)
+```
+`
+
+
+```{r}
+summary(MC)
+
+```
+
+
+```{r}
+RM = mixmodCluster(scaled_wine2,1:3)
+summary(RM)
+```
+
+
+
+
+
+```{r}
+cluster_memberships <- MC$classification
+
+cluster_memberships_2 = RM@bestResult@partition
+cluster_memberships_2
+```
+
+```{r}
+# Perform PCA
+pca_result <- prcomp(scaled_wine2)  # You can adjust scale. as needed
+
+pca_result
+```
+
+
+```{r}
+# Extract PCA scores
+pca_scores <- pca_result$x
+
+#pca_scores
+```
+
+```{r}
+# Plot clusters in reduced-dimensional space (first two principal components)
+plot(pca_scores[, 1], pca_scores[, 2], col = cluster_memberships_2, pch = 19,
+     xlab = "PC1", ylab = "PC2", main = "Clusters Identified by Rmixmod")
+legend("topright", legend = unique(cluster_memberships_2), col = unique(cluster_memberships_2), pch = 19)
+```
+```{r}
+
+```
+
+
+
+
+```{r}
+library(mclust)
+#install.packages('plot3D')
+library(plot3D)
+
+
+
+
+# clusters en 3D  (trois premières composantes principales)
+scatter3D(pca_scores[, 1], pca_scores[, 2], pca_scores[, 3], 
+          colvar = cluster_memberships_2, pch = 19, 
+          xlab = "PC1", ylab = "PC2", zlab = "PC3", 
+          main = "Clusters Identifiés by Rmixmod",
+          colkey = FALSE)  
+
+# legende
+legend("topright", legend = unique(cluster_memberships_2), pch = 19, 
+       title = "Cluster", col = 1:length(unique(cluster_memberships_2)))
+
+```
+
+Pas très visible, on peut créér une animation :
+
+
+
+```{r}
+library(mclust)
+#install.packages('rgl')
+library(rgl)
+
+
+
+# ouvrir une fenêtre 3D
+open3d()
+
+# Crée un cube vide
+plot3d(0, 0, 0, xlim = range(pca_scores[, 1]), ylim = range(pca_scores[, 2]), zlim = range(pca_scores[, 3]), 
+       type = "n", xlab = "PC1", ylab = "PC2", zlab = "PC3")
+
+# Ajouter des objets à chaque cluster
+
+for (i in unique(cluster_memberships_2)) {
+  points3d(pca_scores[cluster_memberships_2 == i, 1], pca_scores[cluster_memberships_2 == i, 2], pca_scores[cluster_memberships_2 == i, 3], 
+           col = i, size = 3)
+}
+
+# animation
+play3d(spin3d(axis = c(0, 0, 1)), duration = 100)
+
+```
+
+
+
+```{r}
+#install.packages('devtools')
+library(devtools)
+#source('https://github.com/mixmod/mixmod/blob/master/Rmixmod/R/MixmodCluster.R')
+```
+
+
+
+
+
+
+
+
+
+
+
