@@ -19,14 +19,14 @@ mydata = import('https://raw.githubusercontent.com/mariocastro73/ML2020-2021/mas
 head(mydata)
 ```
 
-1er travail de clustering avec Mclust : On a supposé ici que les données provenaient d'un mélange de gaussiennes.
+1er travail de clustering avec Mclust : On a supposÃ© ici que les donnÃ©es provenaient d'un mÃ©lange de gaussiennes.
 
-Ceci est p�rement dans le but de comparer Rmixmod et Mclust ( voir temps de calcul, proportions etc...)
+Ceci est pûrement dans le but de comparer Rmixmod et Mclust ( voir temps de calcul, proportions etc...)
 
 
-### Amusons nous d'abord à trouver le nombre optimal de clusters avec la méthode Kmeans
+### Amusons nous d'abord Ã  trouver le nombre optimal de clusters avec la mÃ©thode Kmeans
 
- Ci-dessous, une petite fonction sympa de R, pour rechercher le nombre optimal de cluster (règle du coud)
+ Ci-dessous, une petite fonction sympa de R, pour rechercher le nombre optimal de cluster (rÃ¨gle du coud)
  
 ```{r}
 wssplot <- function(data, nc=15, seed=1234){
@@ -62,9 +62,9 @@ library(ggfortify)
 autoplot(KM,mydata,frame = TRUE)
 ```
 
-Les deux clusters sont très bien séparés et Kmeans marche très bien.
+Les deux clusters sont trÃ¨s bien sÃ©parÃ©s et Kmeans marche trÃ¨s bien.
 
-# Poursuivons cette fois avec les modèles de mélange gaussiens en comparant Mclust et Rmixmod
+# Poursuivons cette fois avec les modÃ¨les de mÃ©lange gaussiens en comparant Mclust et Rmixmod
 
 ```{r}
 #install.packages('mclust')
@@ -77,7 +77,7 @@ ggplot(mydata,aes(x=x,y=y)) +geom_point() + geom_density2d()
 ```
 
 
-Attention ici il ne s'agit pas de gaussiennes ! C'est des densités empiriques. Rien à voir avec des densités de gaussiennes.
+Attention ici il ne s'agit pas de gaussiennes ! C'est des densitÃ©s empiriques. Rien Ã  voir avec des densitÃ©s de gaussiennes.
 
 
 
@@ -92,11 +92,11 @@ dens <- densityMclust(mydata)
 plot(dens,what = 'density',type='persp')
 ```
 
-Ici on  a bien �  faire des densités de gaussiennes.
+Ici on  a bien à  faire des densitÃ©s de gaussiennes.
 
-2ème chose : On peut bien remarquer qu'il y'a trois gaussiennes chacune avec des paramètres différents.
+2Ã¨me chose : On peut bien remarquer qu'il y'a trois gaussiennes chacune avec des paramÃ¨tres diffÃ©rents.
 
-Contrairement � la règle du coude qui souvent est imprécise, Mclust indique trois gaussiennes bien séparées indiquant 3 gaussiennes.
+Contrairement à la rÃ¨gle du coude qui souvent est imprÃ©cise, Mclust indique trois gaussiennes bien sÃ©parÃ©es indiquant 3 gaussiennes.
 
 
 
@@ -152,14 +152,14 @@ head(iris)
 
 ```{r}
 remaining.obs <- sample(1:nrow(iris), 10)
-# then run a mixmodLearn() analysis without those 10 observations
+
 learn <- mixmodLearn(iris[-remaining.obs, 1:4], iris$Species[-remaining.obs])
-# create a MixmodPredict to predict those 10 observations
+
 prediction <- mixmodPredict(
   data = iris[remaining.obs, 1:4],
   classificationRule = learn["bestResult"]
 )
-# show results
+
 prediction
 # compare prediction with real results
 paste("accuracy = ", mean(as.integer(iris$Species[remaining.obs]) == prediction["partition"]) * 100,
@@ -175,25 +175,25 @@ mixmodGaussianModel()
 
 
 
-test sur un jeu de donn�esléatoires :
+test sur un jeu de données  :
 
 
 
 ```{r}
 library(dplyr)
 
-# Définition du nombre de lignes et de colonnes
+
 n_rows <- 5000
 n_cols <- 10
 
-# Génération de données aléatoires
+
 data <- matrix(runif(n_rows * n_cols), nrow = n_rows, ncol = n_cols)
 
-# Création d'un DataFrame avec des données aléatoires
+
 df <- as.data.frame(data)
 colnames(df) <- paste0("Feature_", 1:n_cols)
 
-# Affichage des premières lignes du DataFrame
+# Affichage des premiÃ¨res lignes du DataFrame
 head(df)
 
 ```
